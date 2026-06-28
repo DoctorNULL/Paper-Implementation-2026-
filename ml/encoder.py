@@ -10,7 +10,7 @@ class ModelEncoder(torch.nn.Module):
         self.visual_encoder = CLIPProcessor.from_pretrained(path, use_fast=True)
         self.model = CLIPModel.from_pretrained(path)
 
-    def encode_text(self, caps: list[str]) -> torch.Tensor:
+    def encode_text(self, caps: list[str]) -> dict[str, torch.Tensor]:
         encodes = self.text_tokenizer(caps, padding=True, return_tensors="pt")
 
         return encodes # (B, SeqLength)
