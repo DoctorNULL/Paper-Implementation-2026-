@@ -44,8 +44,8 @@ class CaptionDecoder(nn.Module):
 
         y, (h2, c2) = self.lstm2(y, (prev_h2, prev_c2) if prev_h2 is not None else None) # (B, 2, 512), ((1, B, 512), (1, B, 512))
 
-        logits = self.fc(h2.transpose(0, 1)) # (B, 1, 512)
+        logits = self.out(h2.squeeze(0)) # (B, 512)
 
-        w = self.out(logits.squeeze(1)) # (B, VocabSize)
+        w = logits.argmax(dim=-1)
 
-        return w, logits, new_v, h1, c1, h2, c2
+        return logits, w, new_v, h1, c1, h2, c2

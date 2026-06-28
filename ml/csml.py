@@ -18,6 +18,7 @@ class CSMLModule(nn.Module):
         y = torch.relu(y)
         # (B, 224 * 224)
         y = y.reshape(text_features.size(0), 3, 224, 224)
+        # (B, 3, 224, 224)
 
         y = self.encoder.model.get_image_features(y)
         # (B, 512)

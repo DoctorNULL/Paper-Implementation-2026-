@@ -10,8 +10,12 @@ class ModelEncoder(torch.nn.Module):
         self.visual_encoder = CLIPProcessor.from_pretrained(path, use_fast=True)
         self.model = CLIPModel.from_pretrained(path)
 
+
     def encode_text(self, caps: list[str]) -> dict[str, torch.Tensor]:
         encodes = self.text_tokenizer(caps, padding=True, return_tensors="pt")
+
+        for key, item in encodes.items():
+            encodes[key] = item.to(self.model.device)
 
         return encodes # (B, SeqLength)
 
@@ -33,7 +37,7 @@ class ModelEncoder(torch.nn.Module):
         return self.get_text_features(encodes, normalize)
 
     def encode_video(self, path: str, sampled_frames = 4) -> dict[str, torch.Tensor]:
-        frames = VideoDecoder(path)[:]
+        frames = VideoDecoder(path)[:].to(self.model.device)
 
         frames_index = torch.linspace(0, frames.size(0) - 1, sampled_frames).long()
 

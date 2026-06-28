@@ -33,5 +33,25 @@ class CaptioningModel(nn.Module):
 
         return self.decoder.forward(v_center, v0)
 
-    def generate(self, path: str):
-        visual = self.process_video(path)
+    def generate(self, features: torch.Tensor, max_len = 30):
+        eos = 49407
+
+        res = []
+
+        v_center, v_base = self.akse.forward(features, self.top_k_selection)
+
+        logits, w, v, h1, c1, h2, c2 = None, None, None, None, None, None, None
+
+        for _ in range(max_len):
+            logits, w, v, h1, c1, h2, c2 = self.decoder.forward(v_center, v_base, w, v, h1, c1, h2, c2)
+
+            word = w.item()
+
+            w = self.encoder.get_text_features({"input_ids": w}, normalize=False).unsqueeze(0)
+
+            res.append(word)
+
+            if word == eos:
+                break
+
+        return res

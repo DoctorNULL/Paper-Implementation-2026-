@@ -79,6 +79,6 @@ class AKSEModule(nn.Module):
         v_center = v.mean(dim=1, keepdim=True)  # (B, 1, 512)
 
         for layer in self.layers:
-            v = layer.forward(v_center, v)
+            v = layer.forward(v_center, v) # (B, k + 1, 512)
 
         return v_center, v
